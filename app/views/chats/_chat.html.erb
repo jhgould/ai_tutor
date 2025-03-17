@@ -1,0 +1,125 @@
+<turbo-frame id="current-chat">
+  <div id="<%= dom_id chat %>" class="container-fluid d-flex flex-column vh-100 p-0 bg-white position-relative">
+    <!-- Scrollable conversation area with increased padding at bottom -->
+    <div id="history-area" class="flex-grow-1 overflow-auto p-4" style="padding-bottom: 110px !important;">
+      <% unless chat.q_and_a.blank? %>
+        <% chat.q_and_a.each do |question, answer| %>
+          <div class="row mb-3">
+            <div class="col-auto">
+              <span class="badge bg-light text-dark px-3 py-2 fw-normal">You</span>
+            </div>
+            <div class="col">
+              <div class="p-3 rounded-3" style="background-color: #f7f7f7; border-left: 3px solid #007aff;">
+                <%= simple_format question %>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-auto">
+              <span class="badge bg-light text-dark px-3 py-2 fw-normal">OpenAI</span>
+            </div>
+            <div class="col">
+              <div class="p-3 rounded-3" style="background-color: #f7f7f7; border-left: 3px solid #333333;">
+                <%= simple_format answer %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    
+    <!-- Fixed input bar at bottom with container constraints -->
+    <div class="p-3 border-top bg-white position-absolute bottom-0 w-100">
+      <div class="container-fluid px-0">
+        <%= form_with(model: chat, local: true, class: 'mb-0') do |form| %>
+          <div class="input-group">
+            <%= form.text_field :message, placeholder: 'Ask anything...', class: 'form-control py-3 border-0', style: 'background-color: #f7f7f7; border-radius: 8px 0 0 8px;' %>
+            <button class="btn text-white px-4" type="submit" id="button-addon2" style="background-color: #007aff; border-radius: 0 8px 8px 0;">
+              <i class="bi bi-arrow-right"></i> Send
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Function to scroll and ensure the last message is visible above the input bar
+    function scrollToLastMessage() {
+      const historyArea = document.getElementById('history-area');
+      if (historyArea) {
+        // Calculate height of input bar (approx 80px) plus some margin
+        const inputBarHeight = 100;
+        
+        // First scroll to actual bottom
+        historyArea.scrollTop = historyArea.scrollHeight;
+        
+        // Then adjust to account for input bar
+        setTimeout(() => {
+          const lastMessages = historyArea.querySelectorAll('.row.mb-4');
+          if (lastMessages.length > 0) {
+            const lastMessage = lastMessages[lastMessages.length - 1];
+            // Get position of last message relative to viewport
+            const rect = lastMessage.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            
+            // If last message is obscured by input bar, scroll it into better view
+            if (rect.bottom > viewportHeight - inputBarHeight) {
+              historyArea.scrollBy(0, rect.bottom - (viewportHeight - inputBarHeight) + 20);
+            }
+          }
+        }, 50);
+      }
+    }
+
+    // Function to focus the input field
+    function focusInputField() {
+      const messageInput = document.querySelector('input[name="chat[message]"]');
+      if (messageInput) {
+        messageInput.focus();
+      }
+    }
+    
+    // Scroll when the page loads and focus input
+    document.addEventListener('DOMContentLoaded', () => {
+      scrollToLastMessage();
+      focusInputField();
+    });
+    
+    // Scroll and focus when Turbo loads or renders
+    document.addEventListener('turbo:load', () => {
+      scrollToLastMessage();
+      focusInputField();
+    });
+    
+    document.addEventListener('turbo:render', () => {
+      scrollToLastMessage();
+      focusInputField();
+    });
+    
+    // Scroll when content changes
+    const historyArea = document.getElementById('history-area');
+    if (historyArea) {
+      const observer = new MutationObserver(() => {
+        requestAnimationFrame(() => {
+          scrollToLastMessage();
+          focusInputField();
+        });
+      });
+      observer.observe(historyArea, { childList: true, subtree: true });
+    }
+    
+    // Handle form submission with improved scrolling and focus retention
+    const chatForm = document.querySelector('form');
+    if (chatForm) {
+      chatForm.addEventListener('submit', function() {
+        // Wait for the response to come back
+        setTimeout(() => {
+          scrollToLastMessage();
+          focusInputField();
+        }, 300);
+      });
+    }
+  </script>
+</turbo-frame>

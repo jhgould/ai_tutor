@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AI Tutor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+</head>
+
+<body>
+  <div class="container-fluid p-0 d-flex vh-100">
+    <div class="row g-0 flex-nowrap w-100">
+      <div class="col-auto sidebar bg-dark text-white overflow-auto" style="min-width: 200px; max-width: 250px;">
+        <div class="p-3">
+          <%= form_with(model: Chat.new) do |form| %>
+            <%= form.submit "+ New Chat", class: "btn btn-dark border-light w-100" if current_user.present? %>
+          <% end %>
+        </div>
+        <div class="p-3">
+          <h5>Today: </h5>
+          <div class="chat-list overflow-auto" style="max-height: calc(100vh - 150px);">
+            <turbo-frame id="user-chats">
+              <%= render partial: 'chats/chat_list', collection: current_user.chats.reverse if current_user.present? %>
+            </turbo-frame>
+          </div>
+        </div>
+      </div>
+      <div class="col p-0 overflow-auto">
+        <div class="content-area p-3">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
