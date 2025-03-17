@@ -1,24 +1,50 @@
-# README
+# AI Tutor
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+AI Tutor is a Rails-based AI-integrated learning platform designed to personalize education. Users take a **learning test**, which is analyzed to determine their preferred learning style. Based on the results, AI Tutor leverages **ChatGPT** to present information in a way that best suits each individual.
 
-Things you may want to cover:
+## Features
 
-* Ruby version
+- **Personalized Learning Experience**: Users receive educational content tailored to their learning style.
+- **AI-Powered Adaptation**: ChatGPT adapts responses based on test analysis.
+- **Interactive Learning Test**: Determines how users learn best through tasks and demonstrations.
+- **Seamless AI Integration**: Uses OpenAI's API for intelligent responses.
+- **Fully Containerized**: Runs in **Docker** for easy deployment.
+- **Foreman for Process Management**: Simplifies running services in development.
 
-* System dependencies
+## Getting Started
 
-* Configuration
+### Clone the Repository
+```sh
+git clone https://github.com/your-username/ai_tutor.git
+cd ai_tutor
+```
 
-* Database creation
+### Set Up Environment Variables
+Create a `.env` file and configure it with your OpenAI API key and other environment-specific settings.
 
-* Database initialization
+### Running with Docker
+Ensure you have Docker and Docker Compose installed.
 
-* How to run the test suite
+#### Start the Application
+```sh
+docker-compose up
+```
+This will start the app along with any dependencies defined in the `docker-compose.yml` file.
 
-* Services (job queues, cache servers, search engines, etc.)
+### Running in Development with Foreman
+We use Foreman to manage multiple processes during development.
 
-* Deployment instructions
+#### Start the Application with Foreman
+```sh
+foreman start -f Procfile.dev
+```
+This runs all services defined in `Procfile.dev`, such as the Rails server, workers, and any other background tasks.
 
-* ...
+## Technologies Used
+- Ruby on Rails – Web framework
+- ChatGPT (OpenAI API) – AI-powered responses
+- Docker – Containerized environment
+- Foreman – Process management
+- PostgreSQL – Database
+
+
